@@ -27,7 +27,8 @@ Requires `vows` in order to run all the tests:
     npm install vows
 
 Make sure you have a running redis server.
-*Important!* The tests will select database 15 and flush it prior to doind any changes
+
+*Important!* The test suite will select Redis database 15 and **flush** it prior to doind any changes
 
 Run tests with one of the following:
 
