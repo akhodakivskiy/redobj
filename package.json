@@ -1,10 +1,10 @@
 {
     "name"          : "redobj"
-  , "version"       : "0.1.0"
+  , "version"       : "0.1.1"
   , "engines"       : { "node": ">=0.4.0" }
   , "author"        : "Anton Khodakivskiy <akhodakivskiy@gmail.com>"
   , "keywords"      : [ "redis", "data", "mapper" ]
-  , "directories"   : { "lib": "./lib", "test": "./test" }
+  , "directories"   : { "lib": "./lib", "test": "./test", "examples": "./examples" }
   , "description"   : "redis object data mapper"
   , "main"          : "./lib/redobj"
   , "dependencies"  : { "redis": ">=0.6.0" }
