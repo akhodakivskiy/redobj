@@ -1,7 +1,7 @@
 {
     "name"          : "redobj"
   , "version"       : "0.1"
-  , "engines"       : { "node": ">=0.4.0", }
+  , "engines"       : { "node": ">=0.4.0" }
   , "author"        : "Anton Khodakivskiy <akhodakivskiy@gmail.com>"
   , "keywords"      : [ "redis", "data", "mapper" ]
   , "directories"   : { "lib": "./lib", "test": "./test" }
@@ -12,6 +12,5 @@
         "type":         : "git",
         "url":          : "git://github.com/akhodakivskiyi/redobj.git",
      }
-  ,
 }
 
