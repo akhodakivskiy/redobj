@@ -9,8 +9,8 @@
   , "main"          : "./lib/redobj"
   , "dependencies"  : { "redis": ">=0.6.0" }
   , "repository"    : {
-        "type":         : "git",
-        "url":          : "git://github.com/akhodakivskiyi/redobj.git"
+        "type"  : "git",
+        "url"   : "git://github.com/akhodakivskiyi/redobj.git"
      }
 }
 
