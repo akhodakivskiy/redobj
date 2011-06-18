@@ -28,7 +28,7 @@ Requires `vows` in order to run all the tests:
 
 Make sure you have a running redis server.
 
-*Important!* The test suite will select Redis database 15 and **flush** it prior to doind any changes
+*Important!* The test suite will select Redis database 15 and **flush** it prior to running the tests.
 
 Run tests with one of the following:
 
