@@ -60,32 +60,34 @@ Currently only one level objects are supported. The values may be interpreted as
 Now we can use the Redobj model in order to set, get and delete read objects into redis data store:
 
     model.set({ a: 1, b: ['x', 'x'], c: ['y', 'y'] }, function(err, obj) {
-        ... 
+        ... // obj is the object passed in, with `_id` key set to the assigned object id.
     });
 
     model.get(10, ['a', 'b'], function(err, obj) {
-        ... 
+        ...
     });
 
     model.del(10, function(err, obj) {
-        ...
+        ... // `_id` key is cleared from the object on success.
     });
 
 The second argument passed to the `get` function is optional and should contain the list of keys that you want to retrieve. Also available for the `set` function, will only save the specified keys.
 
 ###mset/mget/mdel
 
-These functions are the same way as their equivalents `set`/`get`/`del`. The difference is that they accepr arrays of objets/ids
+These functions work the same way as their equivalents `set`/`get`/`del`. The difference is that they accept arrays of objets/ids
 
     model.mset([ {a: 1}, {a: 2} ], ['a'], function(err, objs) {
-        ...
+        ... // objs is a list of objects passed in.
+            // `_id` is set on each of the objects.
     });
 
-    model.mget([ 1, 2, 3 ], ['a'], function(err, objs) {
-        ...
+    model.mget([ 1, 2, 3 ], ['a', 'b'], function(err, objs) {
+        ... // objs is a list of nulls (if the object does not exist) 
+            // or objects with keys `a` and `b` set.
     });
 
-    model.mset([ {_id: 1}, 2 ], ['a'], function(err, objs) {
+    model.mdel([ {_id: 1}, 2 ], function(err, objs) {
         ...
     });
 
