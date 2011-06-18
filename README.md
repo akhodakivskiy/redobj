@@ -14,7 +14,7 @@ Redobj is a simple non-blocking object data mapper built on top of `node_redis`.
 
 ##Documentation
 
-Use `dox` in order to generage API docs. Will add a static page to pages.github.com with the docs.
+Use `dox` in order to generage API docs. Later I will add a static page to pages.github.com with the api docs.
 
 Simple example, included in `examples/simple.js`:
 
@@ -45,7 +45,7 @@ Simple example, included in `examples/simple.js`:
       });
     });
 
-##Defining object structure
+###Defining object structure
 
 Currently only one level objects are supported. The values may be interpreted as `strings`, `lists` and `sets`. Redobj will also store back references in case the key is created with the corresponding flag.  Example:
 
@@ -55,7 +55,7 @@ Currently only one level objects are supported. The values may be interpreted as
       , c: redobj.list('backref')
     });
 
-##`set`/`get`/`del`
+###set/get/del
 
 Now we can use the Redobj model in order to set, get and delete read objects into redis data store:
 
@@ -73,7 +73,7 @@ Now we can use the Redobj model in order to set, get and delete read objects int
 
 The second argument passed to the `get` function is optional and should contain the list of keys that you want to retrieve. Also available for the `set` function, will only save the specified keys.
 
-##`mset`/`mget`/`mdel`
+###mset/mget/mdel
 
 These functions are the same way as their equivalents `set`/`get`/`del`. The difference is that they accepr arrays of objets/ids
 
@@ -89,7 +89,7 @@ These functions are the same way as their equivalents `set`/`get`/`del`. The dif
         ...
     });
 
-##`find`
+###find
 
 You will be able to do the backward lookups if a key of your model is marked with `backref` option. In our model `a` and `c` keys are back references, so we can use them for search:
 
