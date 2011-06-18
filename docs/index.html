@@ -1,0 +1,269 @@
+<html>
+	<head>
+		<title>redobj</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<style>body {
+    margin: 0;
+    padding: 0;
+    font: 14px/1.5 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    color: #252519;
+}
+a {
+    color: #252519;
+}
+a:hover {
+    text-decoration: underline;
+    color: #19469D;
+}
+p {
+    margin: 12px 0;
+}
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+}
+table#source {
+    width: 100%;
+    border-collapse: collapse;
+}
+table#source td:first-child {
+    padding: 30px 40px 30px 40px;
+    vertical-align: top;
+}
+table#source td:first-child,
+table#source td:first-child pre {
+    width: 450px;
+}
+table#source td:last-child {
+    padding: 30px 0 30px 40px;
+    border-left: 1px solid #E5E5EE;
+    background: #F5F5FF;
+}
+table#source tr {
+    border-bottom: 1px solid #E5E5EE;
+}
+table#source tr.filename {
+    padding-top: 40px;
+    border-top: 1px solid #E5E5EE;
+}
+table#source tr.filename td:first-child {
+    text-transform: capitalize;
+}
+table#source tr.filename td:last-child {
+    font-size: 12px;
+}
+table#source tr.filename h2 {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+table#source tr.code h1,
+table#source tr.code h2,
+table#source tr.code h3 {
+    margin-top: 30px;
+    font-family: "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+    font-size: 18px;
+}
+table#source tr.code h2 {
+    font-size: 16px;
+}
+table#source tr.code h3 {
+    font-size: 14px;
+}
+table#source tr.code ul {
+    margin: 15px 0 15px 35px;
+    padding: 0;
+}
+table#source tr.code ul li {
+    margin: 0;
+    padding: 1px 0;
+}
+table#source tr.code ul li p {
+    margin: 0;
+    padding: 0;
+}
+table#source tr.code td:first-child pre {
+    padding: 20px;
+}
+#ribbon {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+code .string { color: #219161; }
+code .regexp { color: #219161; }
+code .keyword { color: #954121; }
+code .number { color: #19469D; }
+code .comment { color: #bbb; }
+code .this { color: #19469D; }</style>
+		<script>
+			$(function(){
+				$('tr.code').hide();
+				$('tr.filename').toggle(function(){
+					$(this).nextUntil('.filename').fadeIn();
+				}, function(){
+					$(this).nextUntil('.filename').fadeOut();
+				});
+			});
+		</script>
+	</head>
+	<body>
+<table id="source"><tbody><tr><td><h1>redobj</h1><p>redis object data mapper</p></td><td></td></tr><tr class="filename"><td><h2 id="lib/redobj.js"><a href="#">redobj</a></h2></td><td>lib/redobj.js</td></tr><tr class="code">
+<td class="docs">
+<p>Redobj constructor</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Redis.Client</em>  Redis connection</p></li><li><p><strong>param</strong>: <em>String</em>  name Name to be used in redis keys</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Redobj</span> = <span class="keyword">function</span>(<span class="variable">client</span>, <span class="variable">name</span>, <span class="variable">keys</span>) {
+  <span class="this">this</span>.<span class="variable">client</span> = <span class="variable">client</span>;
+  <span class="this">this</span>.<span class="variable">name</span>   = <span class="variable">name</span>;
+  <span class="this">this</span>.<span class="variable">keys</span>   = <span class="variable">keys</span>;
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Retrieves a single object given its id. Callbacks with null if the object does not exists.
+The id is assigned to the <code>_id</code> property of the object returned.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Number</em>  Object id.</p></li><li><p><strong>param</strong>: <em>Array[String]</em>  (optional) Keys that should be retrieved. By default retrieves all the keys.</p></li><li><p><strong>param</strong>: <em>Function</em>  Callback function.</p></li><li><p><strong>see</strong>: <em>exports</em>
+.Redobj#mget</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Redobj</span>.<span class="variable">prototype</span>.<span class="variable">get</span> = <span class="keyword">function</span>() {
+  <span class="this">this</span>.<span class="variable">_keysCb</span>(<span class="variable">arguments</span>, <span class="keyword">function</span>(<span class="variable">id</span>, <span class="variable">keys</span>, <span class="variable">callback</span>) {
+    <span class="keyword">if</span> (<span class="variable">isNaN</span>(<span class="variable">id</span>)) {
+      <span class="variable">callback</span>(<span class="keyword">new</span> <span class="class">Error</span>(<span class="string">'id is not a number'</span>), <span class="keyword">null</span>);
+    } <span class="keyword">else</span> {
+      <span class="this">this</span>.<span class="variable">_get</span>(<span class="variable">id</span>, <span class="variable">keys</span>, <span class="variable">callback</span>); 
+    }
+  });
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Saves a single object. Assignes the <code>_id</code> property to the object passsed in.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Object</em>  obj Object to store.</p></li><li><p><strong>param</strong>: <em>Array[String]</em>  (optional) Keys that should be stored. By default stores all the keys.</p></li><li><p><strong>param</strong>: <em>Function</em>  Callabck function.</p></li><li><p><strong>see</strong>: <em>exports</em>
+.Redobj#mset</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Redobj</span>.<span class="variable">prototype</span>.<span class="variable">set</span> = <span class="keyword">function</span>() {
+  <span class="this">this</span>.<span class="variable">_keysCb</span>(<span class="variable">arguments</span>, <span class="keyword">function</span>(<span class="variable">obj</span>, <span class="variable">keys</span>, <span class="variable">callback</span>) {
+    <span class="keyword">if</span> (!(<span class="variable">obj</span> <span class="variable">instanceof</span> <span class="class">Object</span>)) {
+      <span class="variable">callback</span>(<span class="keyword">new</span> <span class="class">Error</span>(<span class="string">'can only set Object instances'</span>));
+    } <span class="keyword">else</span> {
+      <span class="this">this</span>.<span class="variable">_set</span>(<span class="variable">obj</span>, <span class="variable">keys</span>, <span class="variable">callback</span>);
+    }
+  });
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Deletes a single object from the storage. 
+On success deletes the <code>_id</code> property of the object passsed in.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Object | Number</em>  Expects the <code>_id</code> property to be set on the object.</p></li><li><p><strong>param</strong>: <em>Function</em>  Callabck function.</p></li><li><p><strong>see</strong>: <em>exports</em>
+.Redobj#mdel</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Redobj</span>.<span class="variable">prototype</span>.<span class="variable">del</span> = <span class="keyword">function</span>(<span class="variable">obj</span>, <span class="variable">callback</span>) {
+  <span class="keyword">if</span> (!(<span class="variable">obj</span> <span class="variable">instanceof</span> <span class="class">Object</span>)) {
+    <span class="variable">callback</span>(<span class="keyword">new</span> <span class="class">Error</span>(<span class="string">'can only del Object instances'</span>));
+  } <span class="keyword">else</span> {
+    <span class="this">this</span>.<span class="variable">_del</span>(<span class="variable">obj</span>, <span class="variable">callback</span>);
+  }
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Retrieves multiple objects given their ids.
+The id is assigned to the <code>_id</code> property of each object returned.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Array[Number]</em>  Object id.</p></li><li><p><strong>param</strong>: <em>Array[String]</em>  (optional) Keys that should be retrieved. By default retrieves all the keys.</p></li><li><p><strong>param</strong>: <em>Function</em>  Callback function.</p></li><li><p><strong>see</strong>: <em>exports</em>
+.Redobj#get</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Redobj</span>.<span class="variable">prototype</span>.<span class="variable">mget</span> = <span class="keyword">function</span>() {
+  <span class="this">this</span>.<span class="variable">_chain</span>(<span class="variable">arguments</span>, <span class="this">this</span>.<span class="variable">get</span>, <span class="variable">true</span>);
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Saves multiple objects. Assignes the <code>_id</code> property on each saved object.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Array[Object]</em>  Objects array to store.</p></li><li><p><strong>param</strong>: <em>Array[String]</em>  (optional) Keys that should be stored. By default stores all the keys.</p></li><li><p><strong>param</strong>: <em>Function</em>  Callabck function.</p></li><li><p><strong>see</strong>: <em>exports</em>
+.Redobj#set</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Redobj</span>.<span class="variable">prototype</span>.<span class="variable">mset</span> = <span class="keyword">function</span>() {
+  <span class="this">this</span>.<span class="variable">_chain</span>(<span class="variable">arguments</span>, <span class="this">this</span>.<span class="variable">set</span>, <span class="variable">true</span>);
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Deletes multiple objects from the storage. 
+On success deletes the <code>_id</code> property of each object passsed in.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Array[Object | Number]</em>  Expects the <code>_id</code> property to be set on each object.</p></li><li><p><strong>param</strong>: <em>Function</em>  Callabck function.</p></li><li><p><strong>see</strong>: <em>exports</em>
+.Redobj#del</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Redobj</span>.<span class="variable">prototype</span>.<span class="variable">mdel</span> = <span class="keyword">function</span>() {
+  <span class="this">this</span>.<span class="variable">_chain</span>(<span class="variable">arguments</span>, <span class="this">this</span>.<span class="variable">del</span>, <span class="variable">false</span>);
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Gets for all the objects with the given key value. 
+On success deletes the <code>_id</code> property of each object passsed in.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  Key name.</p></li><li><p><strong>param</strong>: <em>String</em>  Key value.</p></li><li><p><strong>param</strong>: <em>Array[String]</em>  (optional) Keys that should be stored. By default stores all the keys.</p></li><li><p><strong>param</strong>: <em>Function</em>  Callabck function.</p></li><li><p><strong>see</strong>: <em>Redobj</em>
+#get</p></li><li><strong>see</strong>: <em>Redobj</em>
+#mget</li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Redobj</span>.<span class="variable">prototype</span>.<span class="variable">find</span> = <span class="keyword">function</span>(<span class="variable">key</span>) {
+  <span class="this">this</span>.<span class="variable">_keysCb</span>(<span class="variable">__slice</span>.<span class="variable">call</span>(<span class="variable">arguments</span>, <span class="number integer">1</span>), <span class="keyword">function</span>(<span class="variable">val</span>, <span class="variable">keys</span>, <span class="variable">callback</span>) {
+    <span class="keyword">var</span> <span class="variable">type</span> = <span class="this">this</span>.<span class="variable">keys</span>[<span class="variable">key</span>];
+    <span class="keyword">if</span> (!<span class="variable">type</span> || !<span class="variable">type</span>[<span class="string">'backref'</span>]) {
+      <span class="variable">callback</span>.<span class="variable">call</span>(<span class="keyword">new</span> <span class="class">Error</span>(<span class="string">'no backrefs for key: '</span> + <span class="variable">key</span>));
+    } <span class="keyword">else</span> {
+      <span class="keyword">var</span> <span class="variable">key_str</span> = <span class="string">'backrefs:'</span> + <span class="this">this</span>.<span class="variable">name</span> + <span class="string">':'</span> + <span class="variable">key</span> + <span class="string">':'</span> + <span class="variable">val</span>;
+      <span class="keyword">var</span> <span class="variable">that</span> = <span class="this">this</span>;
+      <span class="this">this</span>.<span class="variable">client</span>.<span class="variable">smembers</span>(<span class="variable">key_str</span>, <span class="keyword">function</span>(<span class="variable">err</span>, <span class="variable">ids</span>) {
+        <span class="keyword">if</span> (<span class="variable">err</span>) {
+          <span class="variable">callback</span>(<span class="variable">err</span>);
+        } <span class="keyword">else</span> {
+          <span class="variable">that</span>.<span class="variable">mget</span>(<span class="variable">ids</span>, <span class="variable">keys</span>, <span class="variable">callback</span>);
+        }
+      });
+    }
+  });
+};</code></pre>
+</td>
+</tr>	</body>
+</html></tbody></table>
