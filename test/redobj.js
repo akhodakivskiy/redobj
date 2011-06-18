@@ -34,7 +34,7 @@ vows.describe('Redobj').addBatch({
         },
         'del': {
           topic: function(obj_get, obj_set, redobj) {
-            redobj.del(obj_get, this.callback);
+            redobj.del(obj_get._id, this.callback);
           },
           'after del': function(err, obj) {
             assert.equal(err, null);

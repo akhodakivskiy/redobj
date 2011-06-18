@@ -2,7 +2,7 @@
 
 ## Description
 
-Redobj is a simple object data mapper built on top of `node_redis`.
+Redobj is a simple non-blocking object data mapper built on top of `node_redis`.
 
 ##Install
 ### Install npm if you haven't done this yet:
@@ -44,6 +44,72 @@ Simple example, included in `examples/simple.js`:
         });
       });
     });
+
+##Defining object structure
+
+Currently only one level objects are supported. The values may be interpreted as `strings`, `lists` and `sets`. Redobj will also store back references in case the key is created with the corresponding flag.  Example:
+
+    var model = new redobj.Redobj(redis_client, 'test' {
+        a: redobj.string('backref')
+      , b: redobj.set()
+      , c: redobj.list('backref')
+    });
+
+##`set`/`get`/`del`
+
+Now we can use the Redobj model in order to set, get and delete read objects into redis data store:
+
+    model.set({ a: 1, b: ['x', 'x'], c: ['y', 'y'] }, function(err, obj) {
+        ... 
+    });
+
+    model.get(10, ['a', 'b'], function(err, obj) {
+        ... 
+    });
+
+    model.del(10, function(err, obj) {
+        ...
+    });
+
+The second argument passed to the `get` function is optional and should contain the list of keys that you want to retrieve. Also available for the `set` function, will only save the specified keys.
+
+##`mset`/`mget`/`mdel`
+
+These functions are the same way as their equivalents `set`/`get`/`del`. The difference is that they accepr arrays of objets/ids
+
+    model.mset([ {a: 1}, {a: 2} ], ['a'], function(err, objs) {
+        ...
+    });
+
+    model.mget([ 1, 2, 3 ], ['a'], function(err, objs) {
+        ...
+    });
+
+    model.mset([ {_id: 1}, 2 ], ['a'], function(err, objs) {
+        ...
+    });
+
+##`find`
+
+You will be able to do the backward lookups if a key of your model is marked with `backref` option. In our model `a` and `c` keys are back references, so we can use them for search:
+
+    model.find('a', 'find me', function(err, objs) {
+        ... // Will retrieve all the objects where key `a` value is `find me`
+    });
+
+    model.find('c', 2, function(err, objs) {
+        ... // Will retrieve all the objects where key `c` (a list) contains value `2`
+    });
+
+##Available key types:
+
+Currently there are 3 key types available. Ther are mapped to the corresponding Redis primitives.
+
+    1. redobj.string
+    2. redobj.list
+    3. redobj.set
+
+Shortly I will probably add hashes and embedded models as separate key types.
 
 ##Contribute?
 
