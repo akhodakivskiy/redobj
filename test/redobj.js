@@ -10,8 +10,8 @@ client.flushdb();
 vows.describe('Redobj').addBatch({
   'single calls': {
     topic: new redobj.Redobj(client, 'one', {
-      'a': redobj.string(),
-      'b': redobj.string(),
+      'a': redobj.value(),
+      'b': redobj.value(),
     }),
     'set': { 
       topic: function(redobj) {
@@ -56,8 +56,8 @@ vows.describe('Redobj').addBatch({
 }).addBatch({
   'multiple calls': {
     topic: new redobj.Redobj(client, 'two', {
-      'a': redobj.string(),
-      'b': redobj.string(),
+      'a': redobj.value(),
+      'b': redobj.value(),
     }),
     'mset': { 
       topic: function(redobj) {
@@ -121,9 +121,9 @@ vows.describe('Redobj').addBatch({
 }).addBatch({
   'key partials': {
     topic: new redobj.Redobj(client, 'three', {
-      'a': redobj.string(),
-      'b': redobj.string(),
-      'c': redobj.string(),
+      'a': redobj.value(),
+      'b': redobj.value(),
+      'c': redobj.value(),
     }),
     'set': { 
       topic: function(redobj) {
@@ -160,8 +160,8 @@ vows.describe('Redobj').addBatch({
 }).addBatch({
   'faulty calls': {
     topic: new redobj.Redobj(client, 'four', {
-      'a': redobj.string(),
-      'b': redobj.string(),
+      'a': redobj.value(),
+      'b': redobj.value(),
     }),
     'get non existings _id' : {
       topic: function(redobj) {
@@ -186,24 +186,49 @@ vows.describe('Redobj').addBatch({
 }).addBatch({
   'backrefs': {
     topic: new redobj.Redobj(client, 'five', {
-      'a': redobj.string('backref'),
-      'b': redobj.string(),
+      'a': redobj.value('backref'),
+      'b': redobj.value(),
+      'c': redobj.value('backref'),
     }),
     'set': {
       topic: function(redobj) {
         redobj.mset([
-          { a: 1, b: 'a' },
-          { a: 1, b: 'b' },
-          { a: 2, b: 'a' },
-          { a: 2, b: 'b' },
+          { a: 1, b: 'a', c: 'x'},
+          { a: 1, b: 'b', c: 'y'},
+          { a: 2, b: 'a', c: 'x'},
+          { a: 2, b: 'b', c: 'y'},
         ], this.callback);
       },
       'after': function(err, objs) {
         assert.isNull(err);
       },
+      'find one on multiple keys': {
+        topic: function(objs, redobj) {
+          redobj.find({ a: 1}, this.callback);
+        },
+        'verify found': function(err, obj) {
+          assert.isNull(err);
+          assert.ok(obj);
+          assert.equal(obj.a, 1);
+          assert.equal(obj.b, 'a');
+          assert.equal(obj.c, 'x');
+        }
+      },
+      'find on multiple keys': {
+        topic: function(objs, redobj) {
+          redobj.mfind({ a: 1, c: 'x' }, this.callback);
+        },
+        'verify found': function(err, objs) {
+          assert.isNull(err);
+          assert.ok(objs);
+          assert.equal(objs.length, 1);
+          assert.equal(objs[0].a, 1);
+          assert.equal(objs[0].c, 'x');
+        },
+      },
       'find on key `a`': {
         topic: function(objs, redobj) {
-          redobj.find('a', 1, this.callback);
+          redobj.mfind({ 'a': 1 }, this.callback);
         },
         'verify found': function(err, objs) {
           assert.isNull(err);
@@ -224,7 +249,7 @@ vows.describe('Redobj').addBatch({
           },
           'set': {
             topic: function(objs_set, objs_find, objs_set, redobj) {
-              redobj.find('a', 3, this.callback)
+              redobj.mfind({ 'a': 3}, this.callback)
             },
             'after': function(err, objs) {
               assert.isNull(err);
@@ -275,7 +300,7 @@ vows.describe('Redobj').addBatch({
         },
         'find': {
           topic: function(obj_get, obj_set, redobj) {
-            redobj.find('a', 2, this.callback);
+            redobj.mfind({'a': 2}, this.callback);
           },
           'after': function(err, objs) {
             assert.isNull(err);
